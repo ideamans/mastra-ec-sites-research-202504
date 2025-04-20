@@ -9,11 +9,15 @@
 
 ## 動作の様子
 
-時間がかかるため8倍速としている。
+以下の動画で動作の様子を示す。時間がかかるため8倍速としている。
+
+この例ではAIエージェントがGoogleスプレッドシートに示した3つのニュースサイトに順次アクセスし、「アクセスランキング」のセクションがあるか確認する。もしサイト名とURLに違いがあればWeb検索を用いて訂正し、確認した結果をGoogleスプレッドシートに記入する。
+
+調査の内容はAIへのプロンプトと、Googleスプレッドシートで管理するデータスキーマでカスタマイズできる。
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/L8bhufrv9Bc?si=1_MNefQKKGQ5mfa-" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-## 動作させるまで
+## プログラムを動作させるまで
 
 プロジェクトを`git clone`した後、以下の手順で動作を確認できる。
 
