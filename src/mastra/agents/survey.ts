@@ -1,5 +1,5 @@
 import { Agent } from '@mastra/core/agent'
-import { gpt41mini } from './models'
+import { gemini20flash } from './models'
 import { webMcp } from '../tools/web'
 
 // サイト調査エージェント
@@ -10,7 +10,7 @@ export const webMcpTools = await webMcp.getTools()
 // 調査の内容に応じてinstructions(システムプロンプト)やmodelを変更する
 export const surveyAgent = new Agent({
   name: 'サイト調査エージェント',
-  model: gpt41mini,
+  model: gemini20flash,
   instructions: `
 あなたはWebサイトの調査員です。以下の調査をステップバイステップで説明しながら進めてください。
 
