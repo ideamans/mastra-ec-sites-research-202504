@@ -9,10 +9,13 @@ import { useSpreadSheetAsDocuments, useSpreadsheetWorksheetWithServiceAccountFil
 export const dataSchema = z.object({
   // スプレッドシートのフィールド名(1行目)と揃えるためプロパティ名はあえて日本語にする
   名前: z.string(), // 必須
+  通称: z.string(), // 必須
+  ジャンル: z.string(),
   URL: z.string(), // 必須
   状態: z.enum(['調査中', '調査済み', 'エラー']).optional(), // 必須
-  アクセスランキングの有無: z.enum(['有り', '無し']).optional(),
-  アクセスランキングの名称: z.string().optional(),
+  公式通販サイトか否か: z.enum(['公式サイト', 'モール出店', 'その他']).optional(),
+  ログインページのURL: z.string().optional(),
+  カートページのURL: z.string().optional(),
   備考: z.string().optional(),
   エラー: z.string().optional(), // 必須
 })
@@ -22,7 +25,7 @@ export const useDocuments = async () => {
   const { sheet } = await useSpreadsheetWorksheetWithServiceAccountFile(
     process.env.GOOGLE_APPLICATION_CREDENTIALS!,
     process.env.GOOGLE_SPREADSHEET_ID!,
-    process.env.GOOGLE_SHEET_NAME || 'Documents',
+    process.env.GOOGLE_SHEET_NAME || 'Documents'
   )
 
   const { documentSchema, snapshot, get, update } = useSpreadSheetAsDocuments(sheet, dataSchema)
