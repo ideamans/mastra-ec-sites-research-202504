@@ -141,33 +141,49 @@ export const iterationStep = new Step({
           商品詳細のURL: z.string().min(1).startsWith('https://').describe('商品詳細ページのURL'),
           商品詳細のHTMLタイトル: z.string().min(1).describe('商品詳細ページのHTMLタイトル'),
         })
-        const updateData = await structureAgent.generate(
-          `
-    以下の調査コメントを構造化してください。
-    アクセスランキングの有無=有りの場合はアクセスランキングの名称も出力してください。
-    ---
-    ${comment}
-        `,
-          {
-            output: updateSchema,
+
+        // スキーマの変換でエラーになることがあるので、3回までリトライする
+        const retries = 3
+        for (const retry of [...Array(retries).keys()]) {
+          try {
+            const updateData = await structureAgent.generate(
+              `
+        以下の調査コメントを構造化してください。
+        アクセスランキングの有無=有りの場合はアクセスランキングの名称も出力してください。
+        ---
+        ${comment}
+            `,
+              {
+                output: updateSchema,
+              }
+            )
+
+            // 調査が完了したら調査済みにする
+            mastra
+              ?.getLogger()
+              ?.info(`(Iteration Step): ☑️ #${rowKey} 調査が完了しました: ${JSON.stringify(updateData.object)}`)
+
+            // 調査結果を確認
+            const validation = updateSchema.safeParse(updateData.object)
+            if (validation.success) {
+              await documents.update(rowKey, { ...updateData.object, 商品調査の状態: '調査済み' })
+            } else {
+              await documents.update(rowKey, {
+                ...updateData.object,
+                商品調査の状態: '要注意',
+                エラー: `${validation.error}`,
+              })
+            }
+
+            // ここまで処理できたらリトライは不要
+            break
+          } catch (error) {
+            mastra
+              ?.getLogger()
+              ?.error(`(Iteration Step): 💣 #${rowKey} エラーが発生しました(${retry + 1} / ${retries}) : ${error}`)
+            // リトライもありえるがひとまずエラーを記録
+            await documents.update(rowKey, { 商品調査の状態: 'エラー', エラー: `${error}` })
           }
-        )
-
-        // 調査が完了したら調査済みにする
-        mastra
-          ?.getLogger()
-          ?.info(`(Iteration Step): ☑️ #${rowKey} 調査が完了しました: ${JSON.stringify(updateData.object)}`)
-
-        // 調査結果を確認
-        const validation = updateSchema.safeParse(updateData.object)
-        if (validation.success) {
-          await documents.update(rowKey, { ...updateData.object, 商品調査の状態: '調査済み' })
-        } else {
-          await documents.update(rowKey, {
-            ...updateData.object,
-            商品調査の状態: '要注意',
-            エラー: `${validation.error}`,
-          })
         }
       } catch (error) {
         mastra?.getLogger()?.error(`(Iteration Step): 💣 #${rowKey} エラーが発生しました: ${error}`)
