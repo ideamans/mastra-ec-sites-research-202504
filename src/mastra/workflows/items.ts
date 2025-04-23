@@ -143,7 +143,7 @@ export const iterationStep = new Step({
         })
 
         // スキーマの変換でエラーになることがあるので、3回までリトライする
-        const retries = 3
+        const retries = 1 // 実装したものの、前段のメッセージのエラーだったので不要だった
         for (const retry of [...Array(retries).keys()]) {
           try {
             const updateData = await structureAgent.generate(
