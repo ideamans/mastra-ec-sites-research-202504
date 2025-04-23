@@ -12,21 +12,21 @@ export const dataSchema = z.object({
   通称: z.string(), // 必須
   ジャンル: z.string(),
   URL: z.string(), // 必須
-  状態: z.enum(['調査中', '調査済み', 'エラー']).optional(), // 必須
+  状態: z.enum(['調査中', '調査済み', '要注意', 'エラー']).optional(), // 必須
   公式通販サイトか否か: z.enum(['公式サイト', 'モール出店', 'その他']).optional(),
   ログインページのURL: z.string().optional(),
   カートページのURL: z.string().optional(),
-  状態2: z.enum(['調査中', '調査済み', 'エラー']).optional(),
+  商品調査の状態: z.enum(['調査中', '調査済み', '要注意', 'エラー']).optional(),
   商品一覧のURL: z.string().optional(),
-  商品一覧のタイトル: z.string().optional(),
+  商品一覧のHTMLタイトル: z.string().optional(),
   商品詳細のURL: z.string().optional(),
-  商品詳細のタイトル: z.string().optional(),
+  商品詳細のHTMLタイトル: z.string().optional(),
   備考: z.string().optional(),
   エラー: z.string().optional(), // 必須
 })
 
 // ドキュメント操作モジュール
-export const useDocuments = async () => {
+export const useItemsDocuments = async () => {
   const { sheet } = await useSpreadsheetWorksheetWithServiceAccountFile(
     process.env.GOOGLE_APPLICATION_CREDENTIALS!,
     process.env.GOOGLE_SPREADSHEET_ID!,
@@ -47,7 +47,10 @@ export const useDocuments = async () => {
   // スプレッドシートから全ドキュメントを読み込み、作業が必要な残タスクをリスト化する
   async function loadBacklog() {
     const { documents, errors } = await snapshot()
-    backlog.documents = documents.filter((doc) => !doc.data.状態)
+    backlog.documents = documents.filter(
+      (doc) =>
+        doc.data.状態 === '調査済み' && doc.data.公式通販サイトか否か === '公式サイト' && !doc.data.商品調査の状態
+    )
     backlog.index = 0
 
     return {
@@ -69,42 +72,6 @@ export const useDocuments = async () => {
 
     return doc.rowKey
   }
-
-  // 当初、エージェントにドキュメントの取得と更新を行わせる設計だったが、
-  // ドキュメントの更新が期待通りに行われないことが多かった
-  // 例えばGeminiはドキュメントの更新を行うが、フィールドが空になることが多く、
-  // GPTはドキュメントの更新自体を飛ばしてしまうことあった
-  // そのため、AIエージェントからのドキュメント操作は行わず、
-  // ドキュメントの取得と更新はワークフローで明示的に行うことにする
-  // 以下はAIエージェントのためにツール化する例
-  // const agentTools = {
-  //   getDocument: createTool({
-  //     id: 'get-document',
-  //     description: '行番号キーを指定してドキュメントを取得する',
-  //     inputSchema: z.object({
-  //       rowKey: z.number().describe('行番号キー'),
-  //     }),
-  //     outputSchema: documentSchema.or(z.null()),
-  //     execute: async ({ context }) => {
-  //       const document = await get(context.rowKey)
-  //       return document
-  //     },
-  //   }),
-  //   updateDocument: createTool({
-  //     id: 'update-document',
-  //     description: 'ドキュメントを部分更新する',
-  //     inputSchema: partialDocumentSchema,
-  //     outputSchema: z.string().or(z.null()),
-  //     execute: async ({ context }) => {
-  //       if (Object.keys(context.data).length === 0) {
-  //         return 'dataが空です。更新するデータを含めてください。'
-  //       }
-  //       console.log({ updateDocument: context })
-  //       await update(context.rowKey, context.data)
-  //       return null
-  //     },
-  //   }),
-  // }
 
   return { load: loadBacklog, get, update, hasBacklog, iterateBacklogKey }
 }

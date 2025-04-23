@@ -12,18 +12,11 @@ const configuration: MCPConfigurationOptions = {
       command: 'npx',
       args: ['-y', '@playwright/mcp@latest'],
     },
-    'brave-search': {
-      command: 'npx',
-      args: ['-y', '@modelcontextprotocol/server-brave-search'],
-      env: {
-        BRAVE_API_KEY: process.env.BRAVE_API_KEY || '',
-      },
-    },
   },
 }
 const expectedServers = Object.keys(configuration.servers).length
 
-export const webMcp = new MCPConfiguration(configuration)
+export const playwrightMcp = new MCPConfiguration(configuration)
 
 export async function restart(logger?: Logger) {
   async function psMcps() {
@@ -50,7 +43,7 @@ export async function restart(logger?: Logger) {
   } while (true)
 
   logger?.info('▶️ MCPサーバーを起動します')
-  const tools = await webMcp.getTools()
+  const tools = await playwrightMcp.getTools()
 
   do {
     const mcps = await psMcps()

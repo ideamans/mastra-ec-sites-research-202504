@@ -1,11 +1,12 @@
 import { Agent } from '@mastra/core/agent'
 import { gemini25flash as model } from './models'
-import { webMcp } from '../tools/web'
+import { playwrightMcp } from '../tools/playwright'
+import { braveSearchMcp } from '../tools/brave'
 
 // サイト調査エージェント
 
-export const webMcpTools = await webMcp.getTools()
-
+export const playwrightMcpTools = await playwrightMcp.getTools()
+export const braveSearchMcpTools = await braveSearchMcp.getTools()
 // 🛠️ 改造ポイント
 // 調査の内容に応じてinstructions(システムプロンプト)やmodelを変更する
 export const surveyAgent = new Agent({
@@ -73,6 +74,7 @@ export const surveyAgent = new Agent({
     maxSteps: 20,
   },
   tools: {
-    ...webMcpTools,
+    ...playwrightMcpTools,
+    ...braveSearchMcpTools,
   },
 })
