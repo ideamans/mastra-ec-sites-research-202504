@@ -1,15 +1,17 @@
 import { Mastra } from '@mastra/core'
 import { createLogger } from '@mastra/core/logger'
 import { surveyAgent } from './agents/survey'
-import { batchWorkflow } from './workflows/batch'
+import { itemsAgent } from './agents/items'
+import { basicWorkflow } from './workflows/basic'
+import { itemsWorkflow } from './workflows/items'
 import { structureAgent } from './agents/structure'
 import { LangfuseExporter } from 'langfuse-vercel'
 
 // Mastraフレームワーク
 
 export const mastra = new Mastra({
-  agents: { surveyAgent, structureAgent },
-  workflows: { batchWorkflow },
+  agents: { surveyAgent, itemsAgent, structureAgent },
+  workflows: { basicWorkflow, itemsWorkflow },
   logger: createLogger({
     name: 'Mastra',
     level: 'info',

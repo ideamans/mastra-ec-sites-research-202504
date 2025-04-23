@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { Lock } from 'async-await-mutex-lock'
 
 import { useDocuments } from '../tools/documents'
-import { restart } from '../tools/web'
+import { restart } from '../tools/playwright'
 
 // AIエージェントとGoogleスプレッドシートによるバッチ処理の実装
 
@@ -168,8 +168,8 @@ export const iterationStep = new Step({
 })
 
 // バッチ処理のワークフロー
-export const batchWorkflow = new Workflow({
-  name: 'Batch Workflow',
+export const basicWorkflow = new Workflow({
+  name: '基本調査のワークフロー',
 })
   .step(loadBacklogStep) // 残タスクを読み込む
   .while(async () => documents.hasBacklog(), iterationStep) // 残タスクがある間、繰り返し調査を行う
