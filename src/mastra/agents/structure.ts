@@ -1,5 +1,5 @@
 import { Agent } from '@mastra/core/agent'
-import { gemini25flash as model } from './models'
+import { gpt41nano as model } from './models'
 
 // 調査結果を構造化データに変換するエージェント
 

@@ -12,11 +12,11 @@ export const dataSchema = z.object({
   通称: z.string(), // 必須
   ジャンル: z.string(),
   URL: z.string(), // 必須
-  状態: z.enum(['調査中', '調査済み', '要注意', 'エラー']).optional(), // 必須
+  状態: z.enum(['調査中', '調査済み', '要注意', 'エラー', '']).optional(), // 必須
   公式通販サイトか否か: z.enum(['公式サイト', 'モール出店', 'その他']).optional(),
   ログインページのURL: z.string().optional(),
   カートページのURL: z.string().optional(),
-  商品調査の状態: z.enum(['調査中', '調査済み', '要注意', 'エラー']).optional(),
+  商品調査の状態: z.enum(['調査中', '調査済み', '要注意', 'エラー', '']).optional(),
   商品一覧のURL: z.string().optional(),
   商品一覧のHTMLタイトル: z.string().optional(),
   商品詳細のURL: z.string().optional(),

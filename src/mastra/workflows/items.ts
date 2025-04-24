@@ -111,6 +111,8 @@ export const iterationStep = new Step({
         }
 
         // 調査エージェントをテキストストリームで実行
+        mastra?.getLogger()?.info(`(Iteration #${rowKey}): ▶️ 調査エージェントを実行します`)
+
         // 🛠️ 改造ポイント
         // 調査エージェントのプロンプトに応じて
         const prompt = JSON.stringify({ 名前: doc.data.名前, URL: doc.data.URL })
@@ -132,6 +134,8 @@ export const iterationStep = new Step({
         const comment = all.join('')
 
         // 調査コメントから更新用のデータを生成する
+        mastra?.getLogger()?.info(`(Iteration #${rowKey}): ▶️ 構造化エージェントを実行します`)
+
         // 🛠️ 改造ポイント
         // src/mastra/tools/documents.tsのdataSchemaの変更に合わせて
         // outputのスキーマを変更する

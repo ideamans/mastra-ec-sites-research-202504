@@ -10,7 +10,7 @@ const configuration: MCPConfigurationOptions = {
   servers: {
     playwright: {
       command: 'npx',
-      args: ['-y', '@playwright/mcp@latest'],
+      args: ['-y', '@playwright/mcp@latest', '--browser', 'firefox'],
     },
   },
 }
